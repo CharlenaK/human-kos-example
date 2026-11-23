@@ -85,7 +85,17 @@ class Filter:
     class Valves(BaseModel):
         kos_api_url: str = Field(
             default="http://127.0.0.1:8787",
-            description="Local kos-engine HTTP API base URL",
+            description=(
+                "kos-engine HTTP API base URL, as seen FROM Open WebUI's own process. "
+                "Docker Desktop: use http://host.docker.internal:8787"
+            ),
+        )
+        public_map_base: str = Field(
+            default="",
+            description=(
+                "Base URL used when writing the /map link into the chat, as seen FROM YOUR BROWSER. "
+                "Leave empty to reuse kos_api_url; set http://127.0.0.1:8787 when Open WebUI runs in Docker"
+            ),
         )
         retrieval_mode: str = Field(
             default="hybrid",
@@ -126,14 +136,25 @@ class Filter:
 
     async def _post_json(self, path: str, payload: Dict[str, Any]) -> Dict[str, Any]:
         base = self.valves.kos_api_url.rstrip("/")
-        if self._injected_client is not None:
-            resp = await self._injected_client.post(f"{base}{path}", json=payload)
+        url = f"{base}{path}"
+        try:
+            if self._injected_client is not None:
+                resp = await self._injected_client.post(url, json=payload)
+            else:
+                async with httpx.AsyncClient(timeout=self.valves.timeout_seconds) as client:
+                    resp = await client.post(url, json=payload)
             resp.raise_for_status()
             return resp.json()
-        async with httpx.AsyncClient(timeout=self.valves.timeout_seconds) as client:
-            resp = await client.post(f"{base}{path}", json=payload)
-            resp.raise_for_status()
-            return resp.json()
+        except httpx.HTTPStatusError as exc:
+            raise RuntimeError(
+                f"kos-engine 返回错误 {exc.response.status_code}（{url}）：{exc.response.text[:200]}"
+            ) from exc
+        except httpx.TransportError as exc:
+            raise RuntimeError(
+                f"无法连接 kos-engine：{url}。请确认 kos-engine 已启动；"
+                "如果 Open WebUI 运行在 Docker 里，请把 Valves 的 kos_api_url 改成 "
+                "http://host.docker.internal:8787"
+            ) from exc
 
     async def inlet(
         self,
@@ -208,7 +229,7 @@ class Filter:
                     "top_k_per_facet": self.valves.top_k_per_facet,
                 },
             )
-            map_url = f"{self.valves.kos_api_url.rstrip('/')}/map"
+            map_url = f"{(self.valves.public_map_base or self.valves.kos_api_url).rstrip('/')}/map"
             context_block = _format_proposal_context(proposal, map_url)
             messages.insert(0, {"role": "system", "content": context_block})
             await self._emit_status(__event_emitter__, "已注入五维隔离候选池（等待人工确认挂载）", done=True)

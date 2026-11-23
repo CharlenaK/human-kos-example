@@ -29,7 +29,14 @@ MCP_APP_MAX_BYTES = 5 * 1024 * 1024
 
 
 def build_mcp_app_ui_meta(api_origin: str = "http://127.0.0.1:8787") -> Dict[str, Any]:
-    """Build `_meta.ui` payload matching Open WebUI v0.13.4 `utils/mcp/apps.py`."""
+    """Build `_meta.ui` payload matching Open WebUI v0.13.4 `utils/mcp/apps.py`.
+
+    Open WebUI derives the sandbox CSP from the **resource** metadata
+    (`resources/read` content `_meta`, falling back to `resources/list`), not from
+    the tool metadata. Without it the iframe gets `connect-src 'none'` and the map
+    cannot fetch `/v1/viewport`. The same payload is therefore attached to both the
+    tool and the `ui://kos-engine/map` resource.
+    """
     return {
         "ui": {
             "resourceUri": MCP_APP_RESOURCE_URI,
@@ -262,7 +269,11 @@ def create_mcp_server(
         }
         return json.dumps(payload, ensure_ascii=False)
 
-    @mcp.resource(MCP_APP_RESOURCE_URI, mime_type=MCP_APP_MIME_TYPE)
+    @mcp.resource(
+        MCP_APP_RESOURCE_URI,
+        mime_type=MCP_APP_MIME_TYPE,
+        meta=build_mcp_app_ui_meta(api_origin),
+    )
     def kos_map_app_resource() -> str:
         """Self-contained interactive WebGL 2D Knowledge World Map for Open WebUI MCP Apps."""
         return load_mcp_app_html(static_map_dir=static_map_dir, api_origin=api_origin)

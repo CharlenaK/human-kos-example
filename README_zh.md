@@ -79,7 +79,19 @@
 
 ### 第 1 步：下载知识图谱文件
 
-前往 [**Human KOS Releases 页面**](https://github.com/CharlenaK/human-kos/releases/latest)下载核心文件 **`human_kos_core.sqlite`**（约 238 MB），放到电脑上任意文件夹里（例如 `data/`）。
+前往 [**Human KOS Releases 页面**](https://github.com/CharlenaK/human-kos/releases/latest) 下载核心文件 **`human_kos_core.sqlite`**（约 238 MB）。
+
+想用扩展包（`unesco`、`lcsh`、`aat` 等，用于把更多专业词汇接进来）的话，把 `human_kos_ext/` 整个文件夹也下载下来，和核心库放在一起：
+
+```text
+my-kos-data/
+├── human_kos_core.sqlite
+└── human_kos_ext/          ← 有就自动认，没有也能跑
+    ├── unesco.sqlite
+    └── ...
+```
+
+> 扩展包必须和核心库**在同一个文件夹**、文件夹名就叫 `human_kos_ext`；也可以用 `--ext-dir` 手动指定路径。
 
 ### 第 2 步：安装轻量工具 `uv`（仅首次需要）
 
@@ -94,20 +106,33 @@
 git clone https://github.com/CharlenaK/human-kos-example.git
 cd human-kos-example/kos_engine
 uv sync
-uv run kos-engine --core <你的路径>/human_kos_core.sqlite serve --port 8787
+uv run kos-engine --core <你的路径>/my-kos-data/human_kos_core.sqlite serve --port 8787
 ```
 
 在浏览器打开 **[`http://127.0.0.1:8787/map`](http://127.0.0.1:8787/map)**，即可开始离线漫游二维知识地图与使用映射工作台。
 
-> **小提示**：如果不额外下载语义向量模型，本应用会自动启用极速离线关键词检索（毫秒级响应）；若希望同时开启跨语言语义混合检索，可下载免费的 `intfloat/multilingual-e5-small` ONNX 模型并在启动时附加 `--model-dir <模型文件夹路径>`。
+> 小提示 1：地图顶部的「按需挂载」会列出你 `human_kos_ext/` 里的全部扩展包，点一下即挂载、再点一下卸载。
+>
+> 小提示 2：如果不额外下载语义向量模型，本应用会自动启用极速离线关键词检索（毫秒级响应）；若希望同时开启跨语言语义混合检索，可下载免费的 `intfloat/multilingual-e5-small` ONNX 模型并在启动时附加 `--model-dir <模型文件夹路径>`。
+>
+> 小提示 3：如果 Open WebUI 跑在 Docker 里，启动时加 `--host 0.0.0.0`，容器才连得进来（详见接入指南）。
 
 ---
 
 ## 🔌 接入 Open WebUI（可选）
 
-如果你日常使用 **Open WebUI（`v0.13.4+`）**，可以直接把本仓库的薄接入套件加载进去，获得对话内 `/attach`、侧栏交互地图与定时漫游简报——全程**零修改 Open WebUI 源码**。
+如果你日常使用 **Open WebUI（`v0.13.4+`）**，可以直接把本仓库的薄接入套件加载进去，获得对话内 `/attach`、内嵌 2D 地图与定时漫游简报——全程**零修改 Open WebUI 源码**。
 
-详细图文步骤见 [`docs/OPEN_WEBUI_GUIDE.md`](./docs/OPEN_WEBUI_GUIDE.md)。
+四步概览：
+
+1. 起 `kos-engine`：`uv run kos-engine --core ... serve --port 8787`
+2. 起 MCP 服务：`uv run kos-engine mcp --transport streamable-http --port 8788 ...`
+3. 在 Open WebUI 里加一个「MCP 流式 HTTP」连接，再导入两个 Python 函数；
+4. 把工具挂到模型上，就能在对话里开地图了。
+
+> Docker 部署有一个坑：Open WebUI 在容器里，要用 `host.docker.internal` 才能访问你电脑上的 `kos-engine`，并且 MCP 服务启动时要加 `--allow-host host.docker.internal:8788`。
+
+详细图文步骤（含每个地址该填什么、报错怎么修）见 [`docs/OPEN_WEBUI_GUIDE.md`](./docs/OPEN_WEBUI_GUIDE.md)。
 
 ---
 
