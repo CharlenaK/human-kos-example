@@ -79,7 +79,19 @@ No Docker, no cloud account, and no database server required.
 
 ### Step 1 — Download the Shared Knowledge Atlas
 
-Download **`human_kos_core.sqlite`** (238 MB) from [**Human KOS Releases**](https://github.com/CharlenaK/human-kos/releases/latest) and place it anywhere on your computer (for example inside a `data/` folder).
+Download **`human_kos_core.sqlite`** (238 MB) from [**Human KOS Releases**](https://github.com/CharlenaK/human-kos/releases/latest).
+
+Optionally, also download the `human_kos_ext/` folder (packs such as `unesco`, `lcsh`, `aat`) and keep it **next to** the core file — that is where the engine looks for extensions:
+
+```text
+my-kos-data/
+├── human_kos_core.sqlite
+└── human_kos_ext/          ← optional, auto-detected
+    ├── unesco.sqlite
+    └── ...
+```
+
+> Extensions must live in a folder literally named `human_kos_ext` beside the core database, or be passed explicitly with `--ext-dir`.
 
 ### Step 2 — Install `uv` (One-Time Setup)
 
@@ -94,12 +106,14 @@ If you don't have [`uv`](https://docs.astral.sh/uv/) (a fast Python runner) yet,
 git clone https://github.com/CharlenaK/human-kos-example.git
 cd human-kos-example/kos_engine
 uv sync
-uv run kos-engine --core /path/to/human_kos_core.sqlite serve --port 8787
+uv run kos-engine --core /path/to/my-kos-data/human_kos_core.sqlite serve --port 8787
 ```
 
 Now open **[`http://127.0.0.1:8787/map`](http://127.0.0.1:8787/map)** in your browser — you are exploring the 2D Knowledge World Map and Personal Workbench completely offline!
 
 *(Optional: Want richer meaning-based search? Download the free `intfloat/multilingual-e5-small` ONNX model folder and pass `--model-dir /path/to/multilingual-e5-small`. Without it, fast keyword search still works automatically out of the box.)*
+
+*(Docker note: if Open WebUI runs in a container, start the engine with `--host 0.0.0.0` so the container can reach it.)*
 
 ---
 
@@ -108,6 +122,10 @@ Now open **[`http://127.0.0.1:8787/map`](http://127.0.0.1:8787/map)** in your br
 Want to use `/attach`, the embedded 2D map tab, and scheduled weekly briefings directly inside **Open WebUI (`v0.13.4+`)**?
 
 Because this kit connects purely through Open WebUI's official extension points (**MCP + MCP Apps + Python Functions + Automations**), you do **not** need to fork or rebuild Open WebUI. Follow the step-by-step setup guide in [`docs/OPEN_WEBUI_GUIDE.md`](./docs/OPEN_WEBUI_GUIDE.md).
+
+In short: (1) run `kos-engine serve`; (2) run `kos-engine mcp --transport streamable-http --port 8788`; (3) add an **MCP Streamable HTTP** tool server and import the two Python functions in Open WebUI; (4) attach the tool server to a model so the assistant can open the map.
+
+> Docker gotcha: when Open WebUI lives in a container, reach the engine at `host.docker.internal` and start the MCP server with `--allow-host host.docker.internal:8788`.
 
 ---
 

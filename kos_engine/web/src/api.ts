@@ -167,6 +167,7 @@ export const kosApi = {
         active_packages: string[];
       };
       available_extensions: string[];
+      attached_extensions?: Record<string, { share_alike: boolean; local_only: boolean }>;
     }>("/v1/meta"),
 
   attachExtension: (pack_id: string) =>

@@ -166,37 +166,67 @@ async function bootstrap(): Promise<void> {
 
   document.getElementById("btn-reset-camera")?.addEventListener("click", () => map.resetCamera());
 
-  // On-demand extension mount/unmount buttons
-  const extBtns = Array.from(document.querySelectorAll<HTMLButtonElement>("#ext-pack-bar [data-ext]"));
-  for (const btn of extBtns) {
-    btn.addEventListener("click", async () => {
-      const packId = btn.dataset.ext!;
-      const mounted = btn.classList.contains("is-active");
-      btn.disabled = true;
-      try {
-        if (mounted) {
-          await kosApi.detachExtension(packId);
-          btn.classList.remove("is-active");
-          showToast(`已卸载扩展包 ${packId}`);
-        } else {
-          const info = await kosApi.attachExtension(packId);
-          btn.classList.add("is-active");
-          if (info.share_alike) {
-            updateComplianceBanner({
-              share_alike_triggered: true,
-              local_only_triggered: false,
-              required_notices: [],
-              summary: `已挂载 CC BY-SA 扩展包（${packId}），对外导出衍生结果时应保留 ShareAlike 署名声明。`,
-            });
+  // On-demand extension mount/unmount chips.
+  // The list comes from the running engine (`/v1/meta`), so every pack under
+  // `human_kos_ext/` is reachable here, not just a hand-picked few.
+  const extBar = document.getElementById("ext-pack-bar");
+  const extAnchor = document.getElementById("btn-reset-camera");
+
+  function renderExtensionBar(meta: {
+    available_extensions: string[];
+    attached_extensions?: Record<string, { share_alike: boolean; local_only: boolean }>;
+  }): void {
+    if (!extBar) return;
+    for (const stale of Array.from(extBar.querySelectorAll<HTMLButtonElement>("[data-ext]"))) {
+      stale.remove();
+    }
+    const packs = meta.available_extensions || [];
+    if (packs.length === 0) {
+      const hint = document.createElement("span");
+      hint.className = "kos-label-micro";
+      hint.textContent = "未发现扩展包（把扩展包放到核心库同级的 human_kos_ext/ 后刷新）";
+      extBar.insertBefore(hint, extAnchor);
+      return;
+    }
+    for (const packId of packs) {
+      const attached = meta.attached_extensions?.[packId];
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "kos-chip-sm";
+      btn.dataset.ext = packId;
+      btn.textContent = attached?.share_alike ? `${packId} (SA)` : packId;
+      if (attached) btn.classList.add("is-active");
+      btn.addEventListener("click", async () => {
+        const mounted = btn.classList.contains("is-active");
+        btn.disabled = true;
+        try {
+          if (mounted) {
+            await kosApi.detachExtension(packId);
+            btn.classList.remove("is-active");
+            btn.textContent = packId;
+            showToast(`已卸载扩展包 ${packId}`);
+          } else {
+            const info = await kosApi.attachExtension(packId);
+            btn.classList.add("is-active");
+            btn.textContent = info.share_alike ? `${packId} (SA)` : packId;
+            if (info.share_alike) {
+              updateComplianceBanner({
+                share_alike_triggered: true,
+                local_only_triggered: false,
+                required_notices: [],
+                summary: `已挂载 CC BY-SA 扩展包（${packId}），对外导出衍生结果时应保留 ShareAlike 署名声明。`,
+              });
+            }
+            showToast(`已按需挂载只读扩展包 ${packId}`);
           }
-          showToast(`已按需挂载只读扩展包 ${packId}`);
+        } catch (err) {
+          showToast(`扩展包操作失败：${String(err)}`);
+        } finally {
+          btn.disabled = false;
         }
-      } catch (err) {
-        showToast(`扩展包操作失败：${String(err)}`);
-      } finally {
-        btn.disabled = false;
-      }
-    });
+      });
+      extBar.insertBefore(btn, extAnchor);
+    }
   }
 
   // Global 5-Facet Isolated Search
@@ -408,6 +438,7 @@ async function bootstrap(): Promise<void> {
     if (badge) {
       badge.textContent = `L1 v${meta.meta.schema_version} · ${meta.meta.core_node_count.toLocaleString()} 节点`;
     }
+    renderExtensionBar(meta);
   } catch {
     showToast("连接 kos-engine API 失败，请确认本地服务已启动。");
   }

@@ -18,7 +18,17 @@ class Action:
     class Valves(BaseModel):
         kos_api_url: str = Field(
             default="http://127.0.0.1:8787",
-            description="Local kos-engine HTTP API base URL",
+            description=(
+                "kos-engine HTTP API base URL, as seen FROM Open WebUI's own process. "
+                "Docker Desktop: use http://host.docker.internal:8787"
+            ),
+        )
+        public_map_base: str = Field(
+            default="",
+            description=(
+                "Base URL used when writing the /map link into the chat, as seen FROM YOUR BROWSER. "
+                "Leave empty to reuse kos_api_url; set http://127.0.0.1:8787 when Open WebUI runs in Docker"
+            ),
         )
         max_hops: int = Field(default=2, ge=1, le=3)
         min_ic: float = Field(default=1.5, ge=0.0, le=10.0)
@@ -30,14 +40,25 @@ class Action:
 
     async def _post_json(self, path: str, payload: Dict[str, Any]) -> Dict[str, Any]:
         base = self.valves.kos_api_url.rstrip("/")
-        if self._injected_client is not None:
-            resp = await self._injected_client.post(f"{base}{path}", json=payload)
+        url = f"{base}{path}"
+        try:
+            if self._injected_client is not None:
+                resp = await self._injected_client.post(url, json=payload)
+            else:
+                async with httpx.AsyncClient(timeout=self.valves.timeout_seconds) as client:
+                    resp = await client.post(url, json=payload)
             resp.raise_for_status()
             return resp.json()
-        async with httpx.AsyncClient(timeout=self.valves.timeout_seconds) as client:
-            resp = await client.post(f"{base}{path}", json=payload)
-            resp.raise_for_status()
-            return resp.json()
+        except httpx.HTTPStatusError as exc:
+            raise RuntimeError(
+                f"kos-engine 返回错误 {exc.response.status_code}（{url}）：{exc.response.text[:200]}"
+            ) from exc
+        except httpx.TransportError as exc:
+            raise RuntimeError(
+                f"无法连接 kos-engine：{url}。请确认 kos-engine 已启动；"
+                "如果 Open WebUI 运行在 Docker 里，请把 Valves 的 kos_api_url 改成 "
+                "http://host.docker.internal:8787"
+            ) from exc
 
     async def action(
         self,
@@ -79,7 +100,7 @@ class Action:
                 },
             )
 
-        map_url = f"{self.valves.kos_api_url.rstrip('/')}/map"
+        map_url = f"{(self.valves.public_map_base or self.valves.kos_api_url).rstrip('/')}/map"
         lines = [
             "### Human KOS 沿边拓扑探索摘要",
             f"- 种子节点：{', '.join(f'`{sid}`' for sid in seed_ids) or '无'}",
@@ -95,7 +116,21 @@ class Action:
 
         content = "\n".join(lines)
         if __event_emitter__ is not None:
-            await __event_emitter__({"type": "message", "data": {"content": content}})
+            # Immediate, always-visible feedback in the message toolbar …
+            await __event_emitter__(
+                {
+                    "type": "status",
+                    "data": {
+                        "description": (
+                            f"沿边拓扑探索完成：{len(subgraph.get('nodes', []))} 节点 / "
+                            f"{len(subgraph.get('edges', []))} 条正向边"
+                        ),
+                        "done": True,
+                    },
+                }
+            )
+            # … plus the full card appended to the message so it stays in history.
+            await __event_emitter__({"type": "message", "data": {"content": "\n\n" + content}})
         return {
             "status": "ok",
             "seed_node_ids": seed_ids,

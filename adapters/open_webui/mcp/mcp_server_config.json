@@ -1,28 +1,40 @@
 {
-  "description": "Open WebUI v0.13.4 External MCP Server configuration for standalone kos-engine (zero-fork integration).",
+  "description": "Open WebUI v0.13.4 外部工具服务器（MCP 流式 HTTP）配置对照表。Open WebUI 不直接导入本文件，请按下面字段在「管理员面板 → 设置 → 扩展功能 → 外部工具服务器 → 添加连接」中逐项填写。",
   "servers": [
     {
       "id": "kos-engine",
       "name": "Human KOS Engine (L2/L3)",
       "transport": "streamable_http",
-      "url": "http://127.0.0.1:8788/mcp",
       "enabled": true,
+      "owui_connection": {
+        "名称": "Human KOS Engine",
+        "类型": "MCP 流式 HTTP",
+        "认证方式": "无身份验证",
+        "URL_同机部署": "http://127.0.0.1:8788/mcp",
+        "URL_OpenWebUI在Docker里": "http://host.docker.internal:8788/mcp"
+      },
+      "start_command": "cd kos_engine && uv run kos-engine mcp --transport streamable-http --port 8788 --api-origin http://127.0.0.1:8787",
+      "start_command_docker": "cd kos_engine && uv run kos-engine mcp --transport streamable-http --host 0.0.0.0 --port 8788 --allow-host host.docker.internal:8788 --api-origin http://127.0.0.1:8787",
       "mcp_apps": {
         "enabled": true,
         "resource_uri": "ui://kos-engine/map",
         "mime_type": "text/html;profile=mcp-app",
         "max_bytes": 5242880
       },
-      "start_command_example": "cd kos_engine && uv run kos-engine mcp --transport streamable-http --api-origin http://127.0.0.1:8787"
+      "notes": [
+        "默认端口 8788；不要用 8000，Open Terminal 默认占用 8000。",
+        "--api-origin 填「你的浏览器」能访问到的 kos-engine 地址（MCP App 地图在浏览器里取数）。",
+        "Open WebUI 跑在 Docker Desktop 里时：客户端地址用 host.docker.internal，服务端加 --allow-host host.docker.internal:8788，否则会收到 421。"
+      ]
     },
     {
-      "id": "kos-engine-stdio-tether",
-      "name": "Human KOS Engine (Local stdio via Open WebUI Tether)",
+      "id": "kos-engine-stdio",
+      "name": "Human KOS Engine (本地 stdio，供 Claude Desktop 等支持命令行的客户端)",
       "transport": "stdio",
       "command": "uv",
       "args": [
         "--directory",
-        "kos_engine",
+        "<repo>/kos_engine",
         "run",
         "kos-engine",
         "mcp",
@@ -31,7 +43,12 @@
         "--api-origin",
         "http://127.0.0.1:8787"
       ],
-      "enabled": false
+      "enabled": false,
+      "owui_supported": false,
+      "notes": [
+        "Open WebUI v0.13.4 的「外部工具服务器」只支持 OpenAPI 与 MCP 流式 HTTP 两种类型，没有 stdio 入口。",
+        "本条目用于 Claude Desktop / Cursor 等支持 command+args 的客户端；在 Open WebUI 里请使用上面的 streamable_http 条目。"
+      ]
     }
   ]
 }

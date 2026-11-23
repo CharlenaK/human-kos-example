@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Optional, Sequence
@@ -13,6 +14,39 @@ from kos_engine.bridge.importers.cherry_studio import import_cherry_studio_backu
 from kos_engine.bridge.importers.open_webui import import_open_webui_export
 from kos_engine.config import EngineConfig
 from kos_engine.core.workspace import KosWorkspace
+
+
+def _transport_security(args: argparse.Namespace):
+    """Build FastMCP transport-security settings for `--transport streamable-http`.
+
+    Returns ``None`` to keep the SDK default (loopback-only Host allowlist) when the
+    caller did not ask for anything. Docker Desktop users forward traffic with the
+    ``host.docker.internal`` Host header, which the default allowlist rejects with
+    HTTP 421, so ``--allow-host host.docker.internal:8788`` is the supported knob.
+    """
+    from mcp.server.transport_security import TransportSecuritySettings
+
+    if args.no_dns_rebinding_protection:
+        return TransportSecuritySettings(enable_dns_rebinding_protection=False)
+
+    extra_hosts = [h.strip() for h in (getattr(args, "allow_host", None) or []) if h and h.strip()]
+    if not extra_hosts:
+        return None
+
+    allowed_hosts = ["127.0.0.1:*", "localhost:*", "[::1]:*"]
+    allowed_origins = ["http://127.0.0.1:*", "http://localhost:*", "http://[::1]:*"]
+    for host in extra_hosts:
+        allowed_hosts.append(host)
+        if not re.fullmatch(r"(?:\[[0-9a-fA-F:]+\]|[^:\[\]]+):\d{1,5}", host):
+            allowed_hosts.append(f"{host}:*")
+        allowed_origins.append(f"http://{host}")
+        allowed_origins.append(f"https://{host}")
+
+    return TransportSecuritySettings(
+        enable_dns_rebinding_protection=True,
+        allowed_hosts=sorted(set(allowed_hosts)),
+        allowed_origins=sorted(set(allowed_origins)),
+    )
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -32,6 +66,33 @@ def _build_parser() -> argparse.ArgumentParser:
     p_mcp = sub.add_parser("mcp", help="Run FastMCP Server (stdio or streamable-http)")
     p_mcp.add_argument("--transport", choices=["stdio", "streamable-http"], default="stdio")
     p_mcp.add_argument("--api-origin", type=str, default="http://127.0.0.1:8787")
+    p_mcp.add_argument(
+        "--host",
+        type=str,
+        default="127.0.0.1",
+        help="Bind address for --transport streamable-http (default: 127.0.0.1; use 0.0.0.0 to accept LAN/Docker traffic)",
+    )
+    p_mcp.add_argument(
+        "--port",
+        type=int,
+        default=8788,
+        help="TCP port for --transport streamable-http (default: 8788, matching mcp_server_config.json)",
+    )
+    p_mcp.add_argument(
+        "--allow-host",
+        action="append",
+        default=None,
+        metavar="HOST[:PORT]",
+        help=(
+            "Extra Host header value accepted by the streamable-http server, repeatable. "
+            "Docker Desktop users normally need: --allow-host host.docker.internal:8788"
+        ),
+    )
+    p_mcp.add_argument(
+        "--no-dns-rebinding-protection",
+        action="store_true",
+        help="Disable the Host-header allowlist entirely (only for trusted local/LAN setups)",
+    )
 
     p_cherry = sub.add_parser(
         "import-cherry",
@@ -89,8 +150,15 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         mcp = create_mcp_server(
             ws, bridge, api_origin=args.api_origin, static_map_dir=cfg.static_map_dir
         )
+        run_kwargs: dict = {}
+        if args.transport == "streamable-http":
+            run_kwargs["host"] = args.host
+            run_kwargs["port"] = args.port
+            transport_security = _transport_security(args)
+            if transport_security is not None:
+                run_kwargs["transport_security"] = transport_security
         try:
-            mcp.run(transport=args.transport)
+            mcp.run(transport=args.transport, **run_kwargs)
         finally:
             bridge.close()
             ws.close()

@@ -7,8 +7,9 @@
   "timezone": "Asia/Shanghai",
   "prompt": "调用 MCP 工具 `kos_generate_serendipity_briefing`（参数：max_hops=2, min_ic=1.5, top_k=6），基于返回的确定性拓扑证据路径与激活重激活信号，整理一份克制、可读的「受控漫游简报」。要求：1）保留每个推荐概念的 `node_id`、分面与完整证据边路径，不编造图谱之外的关联；2）如返回结果中 `license_boundary.share_alike_triggered` 为 true，应在简报末尾原样保留 CC BY-SA 署名声明；3）给出 2–3 个可点击切入的新探索问题。",
   "tool_ids": [
-    "mcp:kos-engine"
+    "server:mcp:human-kos-engine"
   ],
+  "tool_ids_note": "Open WebUI 里工具服务器的真实 ID 形如 server:mcp:<连接ID>；连接 ID 默认是 human-kos-engine，可用 GET /api/v1/tools/ 核对。",
   "delivery": {
     "target": "note_or_chat",
     "open_map_resource_uri": "ui://kos-engine/map"
