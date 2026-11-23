@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 260" width="920" height="260" role="img" aria-label="How Human KOS Example connects the read-only Atlas, your private ledger, and your AI chat client">
+  <rect width="920" height="260" rx="14" fill="#f8f8f6" stroke="#d7d7d4" stroke-width="1.2"/>
+  <!-- Box 1: Read-Only Atlas -->
+  <rect x="28" y="42" width="248" height="176" rx="12" fill="#ffffff" stroke="#d7d7d4" stroke-width="1.2"/>
+  <rect x="44" y="58" width="8" height="8" rx="2" fill="#2563eb"/>
+  <text x="60" y="66" font-family="Inter, PingFang SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="600" fill="#262626">1. Read-Only Atlas (L1)</text>
+  <text x="44" y="94" font-family="Inter, PingFang SC, Microsoft YaHei, sans-serif" font-size="12" fill="#525252">human_kos_core.sqlite + 10 packs</text>
+  <text x="44" y="116" font-family="Inter, PingFang SC, Microsoft YaHei, sans-serif" font-size="12" fill="#525252">• Opened strictly read-only</text>
+  <text x="44" y="138" font-family="Inter, PingFang SC, Microsoft YaHei, sans-serif" font-size="12" fill="#525252">• 84,552 concepts &amp; 2D map coords</text>
+  <text x="44" y="160" font-family="Inter, PingFang SC, Microsoft YaHei, sans-serif" font-size="12" fill="#525252">• Never mixed with private data</text>
+  <text x="44" y="194" font-family="ui-monospace, Consolas, monospace" font-size="11" fill="#737373">CharlenaK/human-kos</text>
+
+  <!-- Arrow 1 -->
+  <path d="M 276 130 L 326 130" stroke="#737373" stroke-width="1.5" fill="none"/>
+  <polygon points="326,125 336,130 326,135" fill="#737373"/>
+
+  <!-- Box 2: Standalone Engine + Map -->
+  <rect x="336" y="32" width="256" height="196" rx="12" fill="#ffffff" stroke="#262626" stroke-width="1.4"/>
+  <rect x="352" y="50" width="8" height="8" rx="2" fill="#7c3aed"/>
+  <text x="368" y="58" font-family="Inter, PingFang SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="600" fill="#262626">2. kos-engine + 2D Map</text>
+  <text x="352" y="86" font-family="Inter, PingFang SC, Microsoft YaHei, sans-serif" font-size="12" fill="#525252">• Bilingual &amp; meaning search</text>
+  <text x="352" y="108" font-family="Inter, PingFang SC, Microsoft YaHei, sans-serif" font-size="12" fill="#525252">• Multi-hop cross-field bridges</text>
+  <text x="352" y="130" font-family="Inter, PingFang SC, Microsoft YaHei, sans-serif" font-size="12" fill="#525252">• Interactive 2D World Map UI</text>
+  <text x="352" y="152" font-family="Inter, PingFang SC, Microsoft YaHei, sans-serif" font-size="12" fill="#525252">• Your private DB III ledger</text>
+  <text x="352" y="174" font-family="Inter, PingFang SC, Microsoft YaHei, sans-serif" font-size="12" fill="#525252">• Local HTTP + MCP Server</text>
+  <text x="352" y="206" font-family="ui-monospace, Consolas, monospace" font-size="11" fill="#737373">100% local · 127.0.0.1:8787</text>
+
+  <!-- Arrow 2 -->
+  <path d="M 592 130 L 642 130" stroke="#737373" stroke-width="1.5" fill="none"/>
+  <polygon points="642,125 652,130 642,135" fill="#737373"/>
+
+  <!-- Box 3: Browser & AI Clients -->
+  <rect x="652" y="42" width="240" height="176" rx="12" fill="#ffffff" stroke="#d7d7d4" stroke-width="1.2"/>
+  <rect x="668" y="58" width="8" height="8" rx="2" fill="#059669"/>
+  <text x="684" y="66" font-family="Inter, PingFang SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="600" fill="#262626">3. Browser &amp; AI Chat</text>
+  <text x="668" y="94" font-family="Inter, PingFang SC, Microsoft YaHei, sans-serif" font-size="12" fill="#525252">• Open in any browser directly</text>
+  <text x="668" y="116" font-family="Inter, PingFang SC, Microsoft YaHei, sans-serif" font-size="12" fill="#525252">• Open WebUI zero-fork kit</text>
+  <text x="668" y="138" font-family="Inter, PingFang SC, Microsoft YaHei, sans-serif" font-size="12" fill="#525252">• /attach &amp; weekly briefings</text>
+  <text x="668" y="160" font-family="Inter, PingFang SC, Microsoft YaHei, sans-serif" font-size="12" fill="#525252">• Optional backup importer</text>
+  <text x="668" y="194" font-family="ui-monospace, Consolas, monospace" font-size="11" fill="#737373">Zero client source forks</text>
+</svg>

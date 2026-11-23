@@ -1,0 +1,13 @@
+# Local runtime data & environments (never commit personal DB III or local caches)
+.kos_local/
+kos_engine/.venv/
+kos_engine/web/node_modules/
+**/__pycache__/
+.pytest_cache/
+pytest-of-*/
+*.pyc
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+.DS_Store
+Thumbs.db

@@ -1,0 +1,149 @@
+/* AUTO-GENERATED FROM docs/design-rules/tokens.dtcg.json — DO NOT EDIT MANUALLY. */
+/* Run: python docs/design-rules/tokens_guard.py --generate */
+
+:root {
+  --kos-font-ui: 'Inter Variable', Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'HarmonyOS Sans SC', 'Microsoft YaHei UI', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Source Han Sans SC', 'Segoe UI', Roboto, sans-serif;
+  --kos-font-code: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', 'PingFang SC', 'Microsoft YaHei UI', monospace;
+  --kos-text-10: 10px;
+  --kos-text-11: 11px;
+  --kos-text-12: 12px;
+  --kos-text-13: 13px;
+  --kos-text-14: 14px;
+  --kos-text-15: 15px;
+  --kos-text-16: 16px;
+  --kos-text-18: 18px;
+  --kos-text-20: 20px;
+  --kos-text-24: 24px;
+  --kos-text-28: 28px;
+  --kos-radius-none: 0px;
+  --kos-radius-data-mark: 2px;
+  --kos-radius-keycap: 4px;
+  --kos-radius-inner: 8px;
+  --kos-radius-container: 12px;
+  --kos-radius-pill: 9999px;
+  --kos-z-map: 10;
+  --kos-z-hud: 20;
+  --kos-z-drawer: 30;
+  --kos-z-popover: 40;
+  --kos-z-modal: 50;
+  --kos-z-toast: 60;
+  --kos-motion-fast: 150ms;
+  --kos-motion-base: 220ms;
+  --kos-motion-camera: 260ms;
+  --kos-motion-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Light mode defaults */
+  --kos-surface: #f8f8f6;
+  --kos-card: #ffffff;
+  --kos-card-ivory: #faf9f5;
+  --kos-board: #d7d7d4;
+  --kos-surface-chip: #e5e5e5;
+  --kos-surface-hover: #efefec;
+  --kos-text-primary: #262626;
+  --kos-text-secondary: #525252;
+  --kos-text-tertiary: #737373;
+  --kos-text-placeholder: #a3a3a3;
+  --kos-cta-bg: #262626;
+  --kos-cta-fg: #ffffff;
+  --kos-cta-hover: #3f3f3c;
+  --kos-focus-ring: #417cdd;
+  --kos-focus-ring-soft: rgba(65, 124, 221, 0.28);
+  --kos-success-fg: #2aae5b;
+  --kos-warning-fg: #ea6b17;
+  --kos-warning-gold: #f3a115;
+  --kos-error-fg: #d91f37;
+  --kos-bridge-edge: #1d4ed8;
+  --kos-map-edge-muted: rgba(115, 115, 115, 0.28);
+  --kos-map-voronoi-stroke: rgba(115, 115, 115, 0.22);
+  --kos-facet-domain: #2563eb;
+  --kos-facet-domain-soft: rgba(37, 99, 235, 0.08);
+  --kos-facet-activity: #059669;
+  --kos-facet-activity-soft: rgba(5, 150, 105, 0.08);
+  --kos-facet-process: #7c3aed;
+  --kos-facet-process-soft: rgba(124, 58, 237, 0.08);
+  --kos-facet-artifact: #d97706;
+  --kos-facet-artifact-soft: rgba(217, 119, 6, 0.08);
+  --kos-facet-stance: #0891b2;
+  --kos-facet-stance-soft: rgba(8, 145, 178, 0.08);
+  --kos-highlight-bg: rgba(65, 124, 221, 0.16);
+  --kos-scrim: rgba(31, 31, 30, 0.36);
+  --kos-shadow-floating: 0 6px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+:root[data-theme="dark"] {
+  --kos-surface: #1f1f1e;
+  --kos-card: #2c2c2a;
+  --kos-card-ivory: #282826;
+  --kos-board: #3c3c3a;
+  --kos-surface-chip: #3c3c3a;
+  --kos-surface-hover: #343432;
+  --kos-text-primary: #d4d4d4;
+  --kos-text-secondary: #a3a3a3;
+  --kos-text-tertiary: #7d7d7a;
+  --kos-text-placeholder: #595956;
+  --kos-cta-bg: #f2f2ef;
+  --kos-cta-fg: #1f1f1e;
+  --kos-cta-hover: #dcdcd8;
+  --kos-focus-ring: #5b93f0;
+  --kos-focus-ring-soft: rgba(91, 147, 240, 0.32);
+  --kos-success-fg: #3fb950;
+  --kos-warning-fg: #f59e0b;
+  --kos-warning-gold: #fbbf24;
+  --kos-error-fg: #f87171;
+  --kos-bridge-edge: #60a5fa;
+  --kos-map-edge-muted: rgba(163, 163, 163, 0.24);
+  --kos-map-voronoi-stroke: rgba(163, 163, 163, 0.18);
+  --kos-facet-domain: #60a5fa;
+  --kos-facet-domain-soft: rgba(96, 165, 250, 0.12);
+  --kos-facet-activity: #34d399;
+  --kos-facet-activity-soft: rgba(52, 211, 153, 0.12);
+  --kos-facet-process: #a78bfa;
+  --kos-facet-process-soft: rgba(167, 139, 250, 0.12);
+  --kos-facet-artifact: #fbbf24;
+  --kos-facet-artifact-soft: rgba(251, 191, 36, 0.12);
+  --kos-facet-stance: #22d3ee;
+  --kos-facet-stance-soft: rgba(34, 211, 238, 0.12);
+  --kos-highlight-bg: rgba(91, 147, 240, 0.24);
+  --kos-scrim: rgba(0, 0, 0, 0.56);
+  --kos-shadow-floating: 0 8px 24px rgba(0, 0, 0, 0.42), 0 1px 3px rgba(0, 0, 0, 0.28);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --kos-surface: #1f1f1e;
+    --kos-card: #2c2c2a;
+    --kos-card-ivory: #282826;
+    --kos-board: #3c3c3a;
+    --kos-surface-chip: #3c3c3a;
+    --kos-surface-hover: #343432;
+    --kos-text-primary: #d4d4d4;
+    --kos-text-secondary: #a3a3a3;
+    --kos-text-tertiary: #7d7d7a;
+    --kos-text-placeholder: #595956;
+    --kos-cta-bg: #f2f2ef;
+    --kos-cta-fg: #1f1f1e;
+    --kos-cta-hover: #dcdcd8;
+    --kos-focus-ring: #5b93f0;
+    --kos-focus-ring-soft: rgba(91, 147, 240, 0.32);
+    --kos-success-fg: #3fb950;
+    --kos-warning-fg: #f59e0b;
+    --kos-warning-gold: #fbbf24;
+    --kos-error-fg: #f87171;
+    --kos-bridge-edge: #60a5fa;
+    --kos-map-edge-muted: rgba(163, 163, 163, 0.24);
+    --kos-map-voronoi-stroke: rgba(163, 163, 163, 0.18);
+    --kos-facet-domain: #60a5fa;
+    --kos-facet-domain-soft: rgba(96, 165, 250, 0.12);
+    --kos-facet-activity: #34d399;
+    --kos-facet-activity-soft: rgba(52, 211, 153, 0.12);
+    --kos-facet-process: #a78bfa;
+    --kos-facet-process-soft: rgba(167, 139, 250, 0.12);
+    --kos-facet-artifact: #fbbf24;
+    --kos-facet-artifact-soft: rgba(251, 191, 36, 0.12);
+    --kos-facet-stance: #22d3ee;
+    --kos-facet-stance-soft: rgba(34, 211, 238, 0.12);
+    --kos-highlight-bg: rgba(91, 147, 240, 0.24);
+    --kos-scrim: rgba(0, 0, 0, 0.56);
+    --kos-shadow-floating: 0 8px 24px rgba(0, 0, 0, 0.42), 0 1px 3px rgba(0, 0, 0, 0.28);
+  }
+}

@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Human KOS · 2D 知识世界地图与映射工作台</title>
+  </head>
+  <body>
+    <div class="kos-app" id="app-root">
+      <header class="kos-topbar">
+        <div class="kos-topbar-left">
+          <span class="kos-brand">Human KOS</span>
+          <nav class="kos-tabs" role="tablist" aria-label="主视图切换">
+            <button
+              class="kos-tab is-active"
+              id="tab-btn-map"
+              role="tab"
+              aria-selected="true"
+              data-tab="map"
+            >
+              2D 知识世界地图
+            </button>
+            <button
+              class="kos-tab"
+              id="tab-btn-workbench"
+              role="tab"
+              aria-selected="false"
+              data-tab="workbench"
+            >
+              映射工作台
+            </button>
+          </nav>
+        </div>
+
+        <form class="kos-search-form" id="global-search-form" role="search">
+          <input
+            type="search"
+            id="global-search-input"
+            class="kos-input-pill"
+            placeholder="搜索五维概念（支持中英混合）…"
+            aria-label="搜索五维概念"
+          />
+          <select id="global-mode-select" class="kos-select-pill" aria-label="检索模式">
+            <option value="hybrid">Hybrid</option>
+            <option value="bm25">BM25</option>
+          </select>
+          <button type="submit" class="kos-btn kos-btn-secondary">检索</button>
+        </form>
+
+        <div class="kos-topbar-right">
+          <span class="kos-meta-pill" id="meta-badge">L1 v1.0.0</span>
+          <button
+            type="button"
+            class="kos-btn kos-btn-secondary"
+            id="theme-toggle-btn"
+            aria-label="切换亮暗模式"
+          >
+            浅色 / 深色
+          </button>
+        </div>
+      </header>
+
+      <!-- ShareAlike / local_only global governance banner (hidden unless triggered) -->
+      <div class="kos-compliance-banner is-hidden" id="compliance-banner" role="status">
+        <span class="kos-compliance-badge" id="compliance-badge">SA</span>
+        <span class="kos-compliance-text" id="compliance-text"></span>
+      </div>
+
+      <!-- TAB 1: 2D Knowledge World Map (T3.5) -->
+      <main class="kos-view is-active" id="view-map" role="tabpanel">
+        <div class="kos-map-stage" id="map-stage">
+          <canvas class="kos-voronoi-canvas" id="voronoi-canvas" aria-hidden="true"></canvas>
+          <div class="kos-sigma-container" id="sigma-container"></div>
+          <canvas class="kos-label-canvas" id="label-canvas" aria-hidden="true"></canvas>
+
+          <!-- Top-Left Floating HUD: 5 Orthogonal Facets + LoD + Extensions -->
+          <section class="kos-hud kos-hud-top-left" aria-label="分面与视口控制">
+            <div class="kos-hud-row" id="facet-filter-bar"></div>
+            <div class="kos-hud-row kos-hud-subrow">
+              <div class="kos-lod-group" id="lod-selector" aria-label="四级 LoD 精度">
+                <span class="kos-label-micro">LoD</span>
+                <button type="button" class="kos-chip-sm" data-lod="0">
+                  <span class="kos-lod-pip"></span>T0
+                </button>
+                <button type="button" class="kos-chip-sm is-active" data-lod="1">
+                  <span class="kos-lod-pip"></span>T1
+                </button>
+                <button type="button" class="kos-chip-sm" data-lod="2">
+                  <span class="kos-lod-pip"></span>T2
+                </button>
+                <button type="button" class="kos-chip-sm" data-lod="3">
+                  <span class="kos-lod-pip"></span>T3
+                </button>
+              </div>
+              <label class="kos-toggle-inline">
+                <input type="checkbox" id="toggle-voronoi" checked />
+                <span>Voronoi 分区</span>
+              </label>
+              <span class="kos-label-micro" id="viewport-counter">视口加载中…</span>
+            </div>
+            <div class="kos-hud-row kos-hud-subrow" id="ext-pack-bar">
+              <span class="kos-label-micro">按需挂载</span>
+              <button type="button" class="kos-chip-sm" data-ext="unesco">unesco (SA)</button>
+              <button type="button" class="kos-chip-sm" data-ext="cn_rel">cn_rel (SA)</button>
+              <button type="button" class="kos-chip-sm" data-ext="lcsh">lcsh</button>
+              <button type="button" class="kos-chip-sm" id="btn-reset-camera">重置视口</button>
+            </div>
+          </section>
+
+          <!-- Search Results Popover -->
+          <section class="kos-search-popover is-hidden" id="search-popover" aria-label="分面隔离检索结果">
+            <div class="kos-popover-header">
+              <span class="kos-card-title">五维分面隔离检索结果</span>
+              <button type="button" class="kos-btn-ghost" id="close-search-popover">关闭</button>
+            </div>
+            <div class="kos-search-results-body" id="search-results-body"></div>
+          </section>
+        </div>
+
+        <!-- Right Node Inspector Drawer -->
+        <aside class="kos-drawer is-hidden" id="node-drawer" aria-label="概念检视抽屉">
+          <div class="kos-drawer-header">
+            <div>
+              <div class="kos-drawer-eyebrow" id="drawer-facet-row"></div>
+              <h2 class="kos-drawer-title" id="drawer-title">未选择节点</h2>
+              <div class="kos-drawer-sub" id="drawer-subtitle"></div>
+            </div>
+            <button type="button" class="kos-btn-ghost" id="close-drawer-btn" aria-label="关闭检视抽屉">
+              <kbd class="kos-kbd">Esc</kbd>
+            </button>
+          </div>
+          <div class="kos-drawer-body" id="drawer-body"></div>
+          <div class="kos-drawer-footer">
+            <button type="button" class="kos-btn kos-btn-primary" id="btn-explore-chat">
+              在对话中探索
+            </button>
+            <button type="button" class="kos-btn kos-btn-secondary" id="btn-expand-2hop">
+              沿边展开 (2-hop)
+            </button>
+          </div>
+        </aside>
+      </main>
+
+      <!-- TAB 2: L3 Personal Bridge Workbench (T3.7) -->
+      <main class="kos-view" id="view-workbench" role="tabpanel">
+        <div class="kos-workbench-grid">
+          <!-- Panel A: /attach Five-Facet Anchor -->
+          <section class="kos-card">
+            <div class="kos-card-head">
+              <div>
+                <h2 class="kos-card-title">
+                  五维正交锚定 <kbd class="kos-kbd">/attach</kbd>
+                </h2>
+                <p class="kos-card-desc">
+                  五分面物理隔离召回候选，由人类或受控代理勾选后写回独立可写 DB III（personal_bridge.sqlite）。
+                </p>
+              </div>
+            </div>
+            <div class="kos-form-stack">
+              <input
+                type="text"
+                id="attach-title"
+                class="kos-input-pill"
+                placeholder="会话标题（例如：知识图谱与强化学习结合）"
+              />
+              <textarea
+                id="attach-text"
+                class="kos-textarea"
+                rows="3"
+                placeholder="输入对话内容或探索主题，生成五维候选池…"
+              ></textarea>
+              <div class="kos-action-row">
+                <button type="button" class="kos-btn kos-btn-secondary" id="btn-propose-attach">
+                  生成五维候选
+                </button>
+                <button type="button" class="kos-btn kos-btn-primary" id="btn-confirm-attach" disabled>
+                  确认挂载至 DB III
+                </button>
+              </div>
+            </div>
+            <div class="kos-facet-columns" id="attach-proposal-box"></div>
+          </section>
+
+          <!-- Panel B: Controlled Serendipity Briefing -->
+          <section class="kos-card">
+            <div class="kos-card-head">
+              <div>
+                <h2 class="kos-card-title">受控漫游简报（确定性拓扑证据）</h2>
+                <p class="kos-card-desc">
+                  基于 oa:cooccur / skos:related / skos:closeMatch、IC ≥ 1.5 与 UCB 探索增益生成，零外部付费 LLM 依赖。
+                </p>
+              </div>
+              <button type="button" class="kos-btn kos-btn-primary" id="btn-run-serendipity">
+                生成漫游简报
+              </button>
+            </div>
+            <div id="serendipity-output" class="kos-stack-list"></div>
+          </section>
+
+          <!-- Panel C: DB III Sessions & Dynamic Named Topic Collections -->
+          <section class="kos-card">
+            <div class="kos-card-head">
+              <div>
+                <h2 class="kos-card-title">DB III 映射账本与动态专题集合</h2>
+                <p class="kos-card-desc">
+                  Named Topic Collections 由会话与五维概念共现及激活衰减自动聚合，无需手工维护专题助手文件夹。
+                </p>
+              </div>
+              <button type="button" class="kos-btn kos-btn-secondary" id="btn-refresh-bridge">
+                刷新账本
+              </button>
+            </div>
+            <div id="collections-output" class="kos-stack-list"></div>
+            <div class="kos-divider"></div>
+            <h3 class="kos-section-subtitle">已记录会话</h3>
+            <div id="sessions-output" class="kos-stack-list"></div>
+          </section>
+
+          <!-- Panel D: Cherry Studio Explicit-Path Backup Importer -->
+          <section class="kos-card">
+            <div class="kos-card-head">
+              <div>
+                <h2 class="kos-card-title">Cherry Studio 备份导入工具（显式路径）</h2>
+                <p class="kos-card-desc">
+                  导入器仅处理您显式指定的备份文件（.sqlite / .db / .json），未指定路径时不会读取本机任何历史记录。
+                </p>
+              </div>
+            </div>
+            <div class="kos-form-stack">
+              <input
+                type="text"
+                id="cherry-path-input"
+                class="kos-input-pill"
+                placeholder="显式输入合成或已脱敏备份文件路径（如 sample_backup.sqlite）"
+              />
+              <div class="kos-action-row">
+                <label class="kos-toggle-inline">
+                  <input type="checkbox" id="cherry-dryrun-check" checked />
+                  <span>Dry-Run 仅预览（不写入 DB III）</span>
+                </label>
+                <button type="button" class="kos-btn kos-btn-secondary" id="btn-import-cherry">
+                  执行导入 / 预览
+                </button>
+              </div>
+            </div>
+            <div id="cherry-import-output" class="kos-stack-list"></div>
+          </section>
+        </div>
+      </main>
+
+      <div class="kos-toast is-hidden" id="kos-toast" role="status" aria-live="polite"></div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

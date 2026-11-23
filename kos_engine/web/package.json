@@ -1,0 +1,26 @@
+{
+  "name": "kos-world-map-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit && vite build"
+  },
+  "dependencies": {
+    "graphology": "^0.26.0",
+    "sigma": "^4.0.6"
+  },
+  "devDependencies": {
+    "@antithesishq/bombadil": "^0.8.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.2.0",
+    "vite-plugin-singlefile": "^2.2.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}

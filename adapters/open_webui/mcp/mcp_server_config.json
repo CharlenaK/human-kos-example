@@ -1,0 +1,37 @@
+{
+  "description": "Open WebUI v0.13.4 External MCP Server configuration for standalone kos-engine (zero-fork integration).",
+  "servers": [
+    {
+      "id": "kos-engine",
+      "name": "Human KOS Engine (L2/L3)",
+      "transport": "streamable_http",
+      "url": "http://127.0.0.1:8788/mcp",
+      "enabled": true,
+      "mcp_apps": {
+        "enabled": true,
+        "resource_uri": "ui://kos-engine/map",
+        "mime_type": "text/html;profile=mcp-app",
+        "max_bytes": 5242880
+      },
+      "start_command_example": "cd kos_engine && uv run kos-engine mcp --transport streamable-http --api-origin http://127.0.0.1:8787"
+    },
+    {
+      "id": "kos-engine-stdio-tether",
+      "name": "Human KOS Engine (Local stdio via Open WebUI Tether)",
+      "transport": "stdio",
+      "command": "uv",
+      "args": [
+        "--directory",
+        "kos_engine",
+        "run",
+        "kos-engine",
+        "mcp",
+        "--transport",
+        "stdio",
+        "--api-origin",
+        "http://127.0.0.1:8787"
+      ],
+      "enabled": false
+    }
+  ]
+}

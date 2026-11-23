@@ -1,0 +1,38 @@
+[build-system]
+requires = ["hatchling>=1.25.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "kos-engine"
+version = "0.1.0"
+description = "Client-agnostic L2 Adapter Contract v1.0 engine, L3 personal_bridge.sqlite manager, and 2D Knowledge World Map host for Human KOS."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn>=0.32.0",
+    "pydantic>=2.9.0",
+    "numpy>=1.26.0",
+    "onnxruntime>=1.19.0",
+    "tokenizers>=0.20.0",
+    "mcp>=1.8.0",
+    "httpx>=0.27.0",
+    "python-dateutil>=2.9.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+]
+
+[project.scripts]
+kos-engine = "kos_engine.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/kos_engine"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

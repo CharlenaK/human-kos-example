@@ -1,0 +1,120 @@
+{
+  "$schema": "https://design-tokens.org/draft-2025/format.json",
+  "$description": "Human KOS Phase 3 Design System single-source tokens (inspired by Cindy Design System).",
+  "meta": {
+    "version": "1.0.0",
+    "decision_id": "KOS-DS-001",
+    "generated_css_target": "kos_engine/web/src/styles/tokens.css"
+  },
+  "color": {
+    "light": {
+      "surface": "#f8f8f6",
+      "card": "#ffffff",
+      "card-ivory": "#faf9f5",
+      "board": "#d7d7d4",
+      "surface-chip": "#e5e5e5",
+      "surface-hover": "#efefec",
+      "text-primary": "#262626",
+      "text-secondary": "#525252",
+      "text-tertiary": "#737373",
+      "text-placeholder": "#a3a3a3",
+      "cta-bg": "#262626",
+      "cta-fg": "#ffffff",
+      "cta-hover": "#3f3f3c",
+      "focus-ring": "#417cdd",
+      "focus-ring-soft": "rgba(65, 124, 221, 0.28)",
+      "success-fg": "#2aae5b",
+      "warning-fg": "#ea6b17",
+      "warning-gold": "#f3a115",
+      "error-fg": "#d91f37",
+      "bridge-edge": "#1d4ed8",
+      "map-edge-muted": "rgba(115, 115, 115, 0.28)",
+      "map-voronoi-stroke": "rgba(115, 115, 115, 0.22)",
+      "facet-domain": "#2563eb",
+      "facet-domain-soft": "rgba(37, 99, 235, 0.08)",
+      "facet-activity": "#059669",
+      "facet-activity-soft": "rgba(5, 150, 105, 0.08)",
+      "facet-process": "#7c3aed",
+      "facet-process-soft": "rgba(124, 58, 237, 0.08)",
+      "facet-artifact": "#d97706",
+      "facet-artifact-soft": "rgba(217, 119, 6, 0.08)",
+      "facet-stance": "#0891b2",
+      "facet-stance-soft": "rgba(8, 145, 178, 0.08)",
+      "highlight-bg": "rgba(65, 124, 221, 0.16)",
+      "scrim": "rgba(31, 31, 30, 0.36)"
+    },
+    "dark": {
+      "surface": "#1f1f1e",
+      "card": "#2c2c2a",
+      "card-ivory": "#282826",
+      "board": "#3c3c3a",
+      "surface-chip": "#3c3c3a",
+      "surface-hover": "#343432",
+      "text-primary": "#d4d4d4",
+      "text-secondary": "#a3a3a3",
+      "text-tertiary": "#7d7d7a",
+      "text-placeholder": "#595956",
+      "cta-bg": "#f2f2ef",
+      "cta-fg": "#1f1f1e",
+      "cta-hover": "#dcdcd8",
+      "focus-ring": "#5b93f0",
+      "focus-ring-soft": "rgba(91, 147, 240, 0.32)",
+      "success-fg": "#3fb950",
+      "warning-fg": "#f59e0b",
+      "warning-gold": "#fbbf24",
+      "error-fg": "#f87171",
+      "bridge-edge": "#60a5fa",
+      "map-edge-muted": "rgba(163, 163, 163, 0.24)",
+      "map-voronoi-stroke": "rgba(163, 163, 163, 0.18)",
+      "facet-domain": "#60a5fa",
+      "facet-domain-soft": "rgba(96, 165, 250, 0.12)",
+      "facet-activity": "#34d399",
+      "facet-activity-soft": "rgba(52, 211, 153, 0.12)",
+      "facet-process": "#a78bfa",
+      "facet-process-soft": "rgba(167, 139, 250, 0.12)",
+      "facet-artifact": "#fbbf24",
+      "facet-artifact-soft": "rgba(251, 191, 36, 0.12)",
+      "facet-stance": "#22d3ee",
+      "facet-stance-soft": "rgba(34, 211, 238, 0.12)",
+      "highlight-bg": "rgba(91, 147, 240, 0.24)",
+      "scrim": "rgba(0, 0, 0, 0.56)"
+    }
+  },
+  "typography": {
+    "font-ui": "'Inter Variable', Inter, -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'HarmonyOS Sans SC', 'Microsoft YaHei UI', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Source Han Sans SC', 'Segoe UI', Roboto, sans-serif",
+    "font-code": "ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', 'PingFang SC', 'Microsoft YaHei UI', monospace",
+    "sizes-px": [10, 11, 12, 13, 14, 15, 16, 18, 20, 24, 28],
+    "weights": [400, 500, 600, 700]
+  },
+  "radius": {
+    "none": "0px",
+    "data-mark": "2px",
+    "keycap": "4px",
+    "inner": "8px",
+    "container": "12px",
+    "pill": "9999px",
+    "allowed-px": [0, 2, 4, 8, 12, 9999]
+  },
+  "elevation": {
+    "light": {
+      "shadow-floating": "0 6px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05)"
+    },
+    "dark": {
+      "shadow-floating": "0 8px 24px rgba(0, 0, 0, 0.42), 0 1px 3px rgba(0, 0, 0, 0.28)"
+    }
+  },
+  "zIndex": {
+    "map": 10,
+    "hud": 20,
+    "drawer": 30,
+    "popover": 40,
+    "modal": 50,
+    "toast": 60
+  },
+  "motion": {
+    "fast": "150ms",
+    "base": "220ms",
+    "camera": "260ms",
+    "easing": "cubic-bezier(0.2, 0.8, 0.2, 1)"
+  }
+}
